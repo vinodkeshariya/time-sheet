@@ -1,25 +1,58 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import LoginForm from './Componet/LoginForm'; // Corrected path
+import RegistrationForm from './Componet/RegistrationForm'; // Corrected path
+import logo from './image/icons8-timesheet-48.png';
 
-function App() {
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('token');
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className='home-page'>
+        <div className='container'>
+          <div className='main-logo'>
+            <img src={logo} alt="Timesheet Application Logo" />
+            <div className='title'>
+              <h1>React Timesheet</h1>
+            </div>
+          </div>
+      
+          <div>
+            <nav>
+              <ul>
+                <li>
+                  <Link to="/login">Login</Link>
+                </li>
+                <li>
+                  <Link to="/registration">Registration</Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <Switch>
+          <Route exact path="/login">
+            <LoginForm onLogin={handleLogin} />
+          </Route>
+          <Route path="/registration">
+            <RegistrationForm />
+          </Route>
+        </Switch>
+        {isAuthenticated && <button onClick={handleLogout}>Logout</button>}
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;
