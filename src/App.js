@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import LoginForm from './Componet/LoginForm'; // Corrected path
 import RegistrationForm from './Componet/RegistrationForm'; // Corrected path
 import logo from './image/icons8-timesheet-48.png';
-
+import TimeSheet from './Componet/Timesheet';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -19,13 +19,16 @@ const App = () => {
   return (
     <Router>
       <div className='home-page'>
-        <div className='container'>
-          <div className='main-logo'>
+        
+        <div className='navbar'><div className='main-logo'>
             <img src={logo} alt="Timesheet Application Logo" />
             <div className='title'>
               <h1>React Timesheet</h1>
             </div>
-          </div>
+           </div>
+           </div>
+           <div className='container'>
+          
       
           <div>
             <nav>
@@ -35,6 +38,9 @@ const App = () => {
                 </li>
                 <li>
                   <Link to="/registration">Registration</Link>
+                </li>
+                <li>
+                  <Link to="/timesheet">TimeSheet</Link>
                 </li>
               </ul>
             </nav>
@@ -47,6 +53,9 @@ const App = () => {
           </Route>
           <Route path="/registration">
             <RegistrationForm />
+          </Route>
+          <Route path="/timesheet">
+            <TimeSheet/>
           </Route>
         </Switch>
         {isAuthenticated && <button onClick={handleLogout}>Logout</button>}

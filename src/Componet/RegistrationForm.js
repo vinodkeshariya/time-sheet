@@ -1,85 +1,120 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-const RegistrationForm = () => {
+function RegistrationForm() {
   const [formData, setFormData] = useState({
+    name: '',
     username: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
   });
-  const [successMessage, setSuccessMessage] = useState('');
-  const history = useHistory();
+
+  const [passwordMatchError, setPasswordMatchError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setPasswordMatchError(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordMatchError(true);
+      return;
+    }
 
-    // Simulate form submission success
-    // Replace this with actual form submission logic
-    setTimeout(() => {
-      setSuccessMessage('Registration successful. Redirecting to login page...');
-      // Clear form data
-      setFormData({
-        username: '',
-        email: '',
-        password: ''
-      });
-      // Redirect to login page after 2 seconds
-      setTimeout(() => {
-        history.push('/login');
-      }, 2000);
-    }, 1000);
+    try {
+      const response = await axios.post('http://localhost:5001/api/auth/register', formData);
+      console.log('User registered:', response.data);
+      // Handle success (e.g., display a success message, redirect to login)
+    } catch (error) {
+      console.error('Error registering user:', error);
+      // Handle errors (e.g., display an error message)
+    }
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
-    <div className='container'>
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="username">Username:</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-        />
+    <div className='reg-form'>
+      <div className='container'>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="name"></label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+            />
+          </div>
+          <div>
+            <label htmlFor="username"></label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Enter your username"
+            />
+          </div>
+          <div>
+            <label htmlFor="email"></label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+            />
+          </div>
+          <div className="password-container">
+            <label htmlFor="password"></label>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+            />
+            <span className="password-toggle-icon" onClick={toggleShowPassword}>
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            </span>
+          </div>
+          <div className="password-container">
+            <label htmlFor="confirmPassword"></label>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm your password"
+            />
+            {passwordMatchError && <p style={{ color: 'red' }}>Passwords do not match</p>}
+            <span className="password-toggle-icon" onClick={toggleShowPassword}>
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            </span>
+          </div>
+          <button type="submit">Register Now</button>
+          <div className="text">
+            <h3>Already have an account? <a href="/login">Login now</a></h3>
+          </div>
+        </form>
       </div>
-      <div>
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <button type="submit">Register</button>
-      {successMessage && <p>{successMessage}</p>}
-     
-    </form>
     </div>
   );
-};
+}
 
 export default RegistrationForm;
